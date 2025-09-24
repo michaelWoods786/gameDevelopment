@@ -6,29 +6,72 @@
 
 
 
+
+const char* vertexShaderSource =
+"#version 330 core\n"
+
+"layout(location = 0) in vec3 aPos;\n" // the position variable has attribute position 0
+"uniform float ourOffset;\n"
+"out vec4 vertexColor;\n" // specify a color output to the fragment shader
+"void main()\n"
+"{\n"
+"gl_Position = vec4(aPos.x + ourOffset, aPos.y, aPos.z,  1.0);\n" // see how we directly give a vec3 to vec4's constructor
+"vertexColor = gl_Position;\n" // set the output variable to a dark-red color
+"}\n";
+
+const char* fragmentShaderSource =
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"in vec4 vertexColor;\n"
+"void main()\n"
+"{\n"
+"FragColor = vertexColor;\n"
+"}\n";
+
+
+
+
+
+/*
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
 "layout (location = 1) in vec3 aColor;\n"
 "out vec3 ourColor;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos, 1.0);\n"
+"   gl_Position = vec4(aPos aP.x,os.y, aPos.z, 1.0);\n"
 "   ourColor = aColor;\n"
 "}\0";
 
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
-"in vec3 ourColor;\n"
+"uniform vec4 ourColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(ourColor, 1.0f);\n"
+"   FragColor = ourColor;\n"
 "}\n\0";
-
+*/
 
 
 
 
 const GLuint WIDTH = 800, HEIGHT = 600;
+
+
+
+
+void useUniform(GLuint shaderProgram) {
+
+	double  timeValue = glfwGetTime();
+	float myOffset = .7f;
+	
+	
+	int vertexPosLocation = glGetUniformLocation(shaderProgram, "ourOffset");
+	glUniform1f(vertexPosLocation,  myOffset);
+
+}
+
+
 
 
 
@@ -190,8 +233,7 @@ int main(int argc, char* argv[])
 	unsigned  int VAO = 0;
 	unsigned int VBO = 0;
 
-
-
+	
 	//vertex array ohject
 
 	setupTriangle(vertices, VAO, VBO, sizeof(vertices) / sizeof(float));
@@ -210,6 +252,11 @@ int main(int argc, char* argv[])
 
 		
 		glUseProgram(shaderProgram);
+		
+
+		useUniform(shaderProgram);
+
+
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
